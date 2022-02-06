@@ -13,8 +13,6 @@ func main() {
 	fmt.Printf("We have total of %v tickets and %v are still avaliable. \n", conferenceTickets, remainingTickets)
 	fmt.Println("Get your ticket here to attend")
 
-	var booking = [50]string{"Tom", "Jerry", "Spike", "Bob"}
-
 	var firstName string
 	var lastName string
 	var email string
@@ -30,9 +28,29 @@ func main() {
 	fmt.Scan(&userTickets)
 
 	remainingTickets -= userTickets
-	// userName = "Tom"
-	// userTickets = 2
+
 	fmt.Println(firstName, "booked", userTickets, "tickets")
 	fmt.Printf("Thank you %v %v for booking %v ticket(s). You will get confirmation on your email: %v \n", firstName, lastName, userTickets, email)
 	fmt.Printf("We have total of %v tickets and %v are still avaliable. \n", conferenceTickets, remainingTickets)
+
+	// Test: arrays
+	var bookingsInintInPlace = [50]string{"Tom", "Jerry", "Spike", "Bob"}
+	fmt.Printf("The whole array: %v\n", bookingsInintInPlace)
+
+	var bookings [50]string
+	bookings[0] = firstName + " " + lastName
+	bookings[1] = "Jerry"
+	fmt.Printf("The whole array: %v\n", bookings)
+	fmt.Printf("The first value: %v\n", bookings[0])
+	fmt.Printf("Array type %T\n", bookings)
+	fmt.Printf("Array length %v\n", len(bookings))
+
+	//Test: Slices
+	bookingsArr := []string{}
+	bookingsArr = append(bookingsArr, firstName+" "+lastName)
+	fmt.Printf("The whole slice: %v\n", bookingsArr)
+	fmt.Printf("The first value: %v\n", bookingsArr[0])
+	fmt.Printf("Slice type %T\n", bookingsArr)
+	fmt.Printf("Slice length %v\n", len(bookingsArr))
+
 }
