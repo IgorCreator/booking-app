@@ -3,14 +3,23 @@ package main
 import (
 	"booking-app/helper"
 	"fmt"
-	"strings"
+	"sync"
+	"time"
 )
 
 const conferenceTickets = 50
 
 var conferenceName = "Go conference"
 var remainingTickets uint = 50
-var bookings = []string{}
+var bookings = make([]UserData, 0)
+var wg = sync.WaitGroup{}
+
+type UserData struct {
+	firstName       string
+	lastName        string
+	email           string
+	numberOfTickets uint
+}
 
 func main() {
 
@@ -27,8 +36,10 @@ func main() {
 		if isNameValid && isEmailValid && isUserTicketsValid {
 			bookTickets(lastName, firstName, email, userTickets)
 
-			firstNames := getFirstNames()
+			wg.Add(1)
+			go sendTicket(lastName, firstName, email, userTickets)
 
+			firstNames := getFirstNames()
 			fmt.Printf("This people booked tickets: %v\n", firstNames)
 		} else {
 			if !isEmailValid {
@@ -45,6 +56,7 @@ func main() {
 		}
 	}
 
+	wg.Wait() // don't give programm fininsh it job until all threads fininsh it job
 }
 
 func greetUsers() {
@@ -55,17 +67,35 @@ func greetUsers() {
 
 func getFirstNames() []string {
 	firstNames := []string{}
-	for _, fullName := range bookings {
-		var names = strings.Fields(fullName)
-		firstNames = append(firstNames, names[0])
+	for _, userData := range bookings {
+		firstNames = append(firstNames, userData.firstName)
 	}
 	return firstNames
 }
 
 func bookTickets(lastName string, firstName string, email string, userTickets uint) {
 	remainingTickets -= userTickets
-	bookings = append(bookings, firstName+" "+lastName)
+
+	var userData = UserData{
+		firstName:       firstName,
+		lastName:        lastName,
+		email:           email,
+		numberOfTickets: userTickets,
+	}
+
+	bookings = append(bookings, userData)
 
 	fmt.Printf("Thank you %v %v for booking %v ticket(s). You will get confirmation on your email: %v \n", firstName, lastName, userTickets, email)
 	fmt.Printf("We have %v tickets avaliable. \n", remainingTickets)
+}
+
+func sendTicket(lastName string, firstName string, email string, userTickets uint) {
+
+	time.Sleep(10 * time.Second) // simulate delay for confirmation generation
+
+	var ticketConfirm = fmt.Sprintf("%v ticket for %v %v", userTickets, firstName, lastName)
+
+	fmt.Printf("Sending ticket \n\t[%v] \nto email: %v", ticketConfirm, email)
+
+	wg.Done()
 }
